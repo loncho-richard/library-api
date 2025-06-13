@@ -8,7 +8,7 @@ class Loan(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
     book_id: int = Field(foreign_key="book.id")
     user_id: int = Field(foreign_key="user.id")
-    loan_date: date = Field(foreign_key=date.today)
+    loan_date: date = Field(default_factory=date.today)
     due_date: date
     return_date: date | None = None
 
