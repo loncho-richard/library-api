@@ -20,3 +20,11 @@ class BookRead(BookBase):
     publisher_name: str
     is_available: bool
     due_date: date | None = None
+
+
+class BookUpdate(BaseModel):
+    title: str | None = None
+    isbn: str | None = None
+    publication_year: int | None = None
+    author_id: int | None = None
+    publisher_id: int | None = None
