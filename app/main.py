@@ -1,3 +1,4 @@
+import logging
 from fastapi import FastAPI
 from app.database import create_db_and_tables
 from app.initial_data import seed_database
@@ -7,6 +8,8 @@ from app.routes.authors import router as authors_router
 from app.routes.publishers import router as publishers_router
 from app.routes.users import router as users_router
 from app.routes.loans import router as loans_router
+
+logging.basicConfig(level=logging.INFO)
 
 app = FastAPI(
     title="Library API",

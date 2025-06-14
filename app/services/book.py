@@ -1,3 +1,4 @@
+import logging
 from app.schemas.book import BookCreate, BookRead, BookUpdate
 from app.models.book import Book
 from app.repositories.book import BookRepository
@@ -5,6 +6,7 @@ from app.repositories.author import AuthorRespository
 from app.repositories.publisher import PublisherRepository
 from sqlmodel import Session
 
+logger = logging.getLogger(__name__)
 
 class BookService:
     def __init__(self, db: Session):
@@ -13,10 +15,12 @@ class BookService:
         self.publisher_repo = PublisherRepository(db)
     
     def create_book(self, data: BookCreate) -> BookRead:
+        logger.info("Creating book with data: %s", data.model_dump())
         book = Book(**data.model_dump())
         created = self.book_repo.create(book)
         author = self.author_repo.get_by_id(created.author_id)
         publisher = self.publisher_repo.get_by_id(created.publisher_id)
+        logger.info("Book created with ID: %s", created.id)
         return BookRead(
             **created.model_dump(),
             author_name=author.name if author else None,
@@ -26,6 +30,7 @@ class BookService:
         )
     
     def get_books(self) -> list[BookRead]:
+        logger.info("Fetching all books")
         books = self.book_repo.get_all()
         results = []
         for book in books:
@@ -42,8 +47,10 @@ class BookService:
         return results
     
     def get_book(self, book_id: int) -> BookRead | None:
+        logger.info("Getting book with ID: %s", book_id)
         book = self.book_repo.get_by_id(book_id)
         if not book:
+            logger.warning("Book not found with ID: %s", book_id)
             return None
         author = self.author_repo.get_by_id(book.author_id)
         publisher = self.publisher_repo.get_by_id(book.publisher_id)
@@ -57,8 +64,10 @@ class BookService:
         )
 
     def update_book(self, book_id: int, data: BookUpdate) -> BookRead | None:
+        logger.info("Updating book ID %s with data: %s", book_id, data.model_dump(exclude_unset=True))
         book = self.book_repo.get_by_id(book_id)
         if not book:
+            logger.warning("Book not found for update with ID: %s", book_id)
             return None
         updated = self.book_repo.update(book, data.model_dump(exclude_unset=True))
         author = self.author_repo.get_by_id(updated.author_id)
@@ -73,8 +82,11 @@ class BookService:
         )
     
     def delete_book(self, book_id: int) -> bool:
+        logger.info("Deleting book with ID: %s", book_id)
         book = self.book_repo.get_by_id(book_id)
         if not book:
+            logger.warning("Book not found for deletion with ID: %s", book_id)
             return False
         self.book_repo.delete(book_id)
+        logger.info("Book deleted successfully: %s", book_id)
         return True
