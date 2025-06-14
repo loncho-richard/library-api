@@ -18,3 +18,10 @@ class LoanRead(LoanBase):
     return_date: date | None = None
     book_title: str
     user_name: str
+
+
+class LoanUpdate(LoanBase):
+    loan_date: date | None = None
+    return_date: date | None = None
+    book_title: str | None = None
+    user_name: str | None = None
