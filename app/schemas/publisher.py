@@ -10,9 +10,10 @@ class PublisherCreate(PublisherBase):
     pass
 
 
-class PusblisherRead(PublisherBase):
+class PublisherRead(PublisherBase):
     id: int
 
 
-class PublisherUpdate(PublisherBase):
-    pass
+class PublisherUpdate(BaseModel):
+    name: str | None = None
+    founding_year: int | None = None

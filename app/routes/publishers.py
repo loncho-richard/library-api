@@ -1,0 +1,40 @@
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlmodel import Session
+from app.schemas.publisher import PublisherCreate, PublisherRead, PublisherUpdate
+from app.services.publisher import PublisherService
+from app.database import get_session
+
+
+router = APIRouter(prefix="/publishers", tags=["Publishers"])
+
+
+def get_service(db: Session = Depends(get_session)) -> PublisherService:
+    return PublisherService(db)
+
+
+@router.post("/", response_model=PublisherRead, status_code=status.HTTP_201_CREATED)
+async def create_publisher(publisher: PublisherCreate, service: PublisherService = Depends(get_service)):
+    return service.create_publisher(publisher)
+
+@router.get("/", response_model=list[PublisherRead])
+async def list_publishers(service: PublisherService = Depends(get_service)):
+    return service.get_publishers()
+
+@router.get("/{publisher_id}", response_model=PublisherRead)
+async def get_publisher(publisher_id: int, service: PublisherService = Depends(get_service)):
+    publisher = service.get_publisher(publisher_id)
+    if not publisher:
+        raise HTTPException(status_code=404, detail="Publisher not found")
+    return publisher
+
+@router.put("/{publisher_id}", response_model=PublisherRead)
+async def update_publisher(publisher_id: int, update: PublisherUpdate, service: PublisherService = Depends(get_service)):
+    publisher = service.update_publisher(publisher_id, update)
+    if not publisher:
+        raise HTTPException(status_code=404, detail="Publisher not found")
+    return publisher
+
+@router.delete("/{publisher_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_publisher(publisher_id: int, service: PublisherService = Depends(get_service)):
+    if not service.delete_publisher(publisher_id):
+        raise HTTPException(status_code=404, detail="Publisher not found")
