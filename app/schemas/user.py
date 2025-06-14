@@ -14,3 +14,8 @@ class UserCreate(UserBase):
 
 class UserRead(UserBase):
     id: int
+
+
+class UserUpdate(BaseModel):
+    name: str | None = None
+    email: str | None = None
