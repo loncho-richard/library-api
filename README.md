@@ -147,23 +147,6 @@ erDiagram
 
 ---
 
-## 🔄 External Integration Diagram (Mermaid)
-
-```mermaid
-sequenceDiagram
-    participant U as User
-    participant API as Library API
-    participant S as Email Service
-
-    U->>API: POST /loans
-    API->>API: Create loan
-    API->>S: POST /send-email
-    S-->>API: 200 OK
-    API-->>U: Loan confirmed + notification sent
-```
-
----
-
 ## 🧠 Data Transformation
 
 The API responses are **denormalized**:
