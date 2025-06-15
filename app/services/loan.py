@@ -57,7 +57,7 @@ class LoanService:
     
     def update_loan(self, loan_id: int, data: LoanUpdate) -> LoanRead | None:
         logger.info("Updating loan ID %s with data: %s", loan_id, data.model_dump(exclude_unset=True))
-        loan = self.repo.get_by_id(loan_id)
+        loan = self.loan_repo.get_by_id(loan_id)
         if not loan:
             logger.warning("Loan not found for update with ID: %s", loan_id)
             return None
