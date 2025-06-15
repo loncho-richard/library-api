@@ -97,6 +97,37 @@ These demo users are created by `initial_data.py` when the database is first see
 
 ---
 
+## 📥 CSV Data Upload
+
+The API allows bulk book creation using a CSV file.
+
+### 🗂️ Expected CSV Format
+
+Make sure the `books.csv` file (located in the project root) folloes this format:
+
+```csv
+title,isbn,publication_year,author_id,publisher_id
+The Hobbit,9780547928227,1937,1,1
+1984,9780451524935,1949,2,2
+```
+
+### 🚀 Upload Endpoint
+
+To upload the `books.csv` file, run:
+
+```bash
+curl -X POST -F "file=@books.csv" http://localhost:8000/books/upload-csv
+```
+This endpoint will:
+
+- Create authors and publishers if they don’t already exist.
+
+- Create books associated with the correct author and publisher.
+
+- Return a summary of successfully created books and any rows that failed validation.
+
+---
+
 ## 📊 Database Diagram (Mermaid)
 
 ```mermaid
