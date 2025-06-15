@@ -17,7 +17,7 @@ from app.deps import get_session
 from app.repositories.user import UserRepository
 
 
-router = APIRouter()
+router = APIRouter(tags=["Auth"])
 
 @router.post("/login")
 async def login_for_access_token(
