@@ -8,6 +8,7 @@ from app.routes.authors import router as authors_router
 from app.routes.publishers import router as publishers_router
 from app.routes.users import router as users_router
 from app.routes.loans import router as loans_router
+from app.routes.system import router as system_router
 
 logging.basicConfig(level=logging.INFO)
 
@@ -28,3 +29,4 @@ app.include_router(authors_router)
 app.include_router(publishers_router)
 app.include_router(users_router)
 app.include_router(loans_router)
+app.include_router(system_router)
