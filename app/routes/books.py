@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File
 from sqlmodel import Session
 from app.schemas.book import BookCreate, BookRead, BookUpdate
 from app.services.book import BookService
-from app.database import get_session
+from app.deps import get_book_service
 import csv
 from io import StringIO
 
@@ -10,22 +10,18 @@ from io import StringIO
 router = APIRouter(prefix="/books", tags=["Books"])
 
 
-def get_service(db: Session = Depends(get_session)) -> BookService:
-    return BookService(db)
-
-
 @router.post("/", response_model=BookRead, status_code=status.HTTP_201_CREATED)
-async def create_book(book: BookCreate, service: BookService = Depends(get_service)):
+async def create_book(book: BookCreate, service: BookService = Depends(get_book_service)):
     return service.create_book(book)
 
 
 @router.get("/", response_model=list[BookRead])
-async def list_books(limit: int = 100, offset: int = 0, service: BookService = Depends(get_service)):
+async def list_books(limit: int = 100, offset: int = 0, service: BookService = Depends(get_book_service)):
     return service.get_books(limit=limit, offset=offset)
 
 
 @router.get("/{book_id}", response_model=BookRead)
-async def get_book(book_id: int, service: BookService = Depends(get_service)):
+async def get_book(book_id: int, service: BookService = Depends(get_book_service)):
     book = service.get_book(book_id)
     if not book:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Book not found")
@@ -33,7 +29,7 @@ async def get_book(book_id: int, service: BookService = Depends(get_service)):
 
 
 @router.put("/{book_id}", response_model=BookRead)
-async def update_book(book_id: int, update: BookUpdate, service: BookService = Depends(get_service)):
+async def update_book(book_id: int, update: BookUpdate, service: BookService = Depends(get_book_service)):
     book = service.update_book(book_id, update)
     if not book:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Book not found")
@@ -41,13 +37,13 @@ async def update_book(book_id: int, update: BookUpdate, service: BookService = D
 
 
 @router.delete("/{book_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_book(book_id: int, service: BookService = Depends(get_service)):
+async def delete_book(book_id: int, service: BookService = Depends(get_book_service)):
     if not service.delete_book(book_id):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Book not found")
 
 
 @router.post("/upload-csv")
-async def upload_books_csv(file: UploadFile = File(...), service: BookService = Depends(get_service)):
+async def upload_books_csv(file: UploadFile = File(...), service: BookService = Depends(get_book_service)):
     if not file.filename.endswith(".csv"):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid file type")
 
