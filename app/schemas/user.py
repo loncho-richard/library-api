@@ -9,7 +9,7 @@ class UserBase(BaseModel):
 
 
 class UserCreate(UserBase):
-    pass
+    password: str
 
 
 class UserRead(UserBase):
@@ -19,3 +19,4 @@ class UserRead(UserBase):
 class UserUpdate(BaseModel):
     name: str | None = None
     email: str | None = None
+    password: str | None = None

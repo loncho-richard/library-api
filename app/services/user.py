@@ -12,7 +12,7 @@ class UserService:
 
     def create_user(self, data: UserCreate) -> UserRead:
         logger.info("Creating user with data: %s", data.model_dump())
-        user = User(**data.model_dump())
+        user = UserCreate(**data.model_dump())
         return self.repo.create(user)
     
     def get_users(self) -> list[UserRead]:

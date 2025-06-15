@@ -4,22 +4,28 @@ from app.models.book import Book
 from app.models.publisher import Publisher
 from app.models.user import User
 from app.models.loan import Loan
-from sqlmodel import Session
+from sqlmodel import Session, select
 from datetime import date, timedelta
+from app.core.hashing import get_password_hash
 
 def seed_database():
     # Crear tablas si no existen
     create_db_and_tables()
-    
+
     with Session(engine) as session:
+        # Verificar si ya hay autores
+        if session.exec(select(Author)).first():
+            print("⚠️  Los datos iniciales ya fueron cargados. Abortando para evitar duplicados.")
+            return
+
         # Crear autores
         author1 = Author(name="J.R.R. Tolkien", birth_date=date(1892, 1, 3), nationality="British")
         author2 = Author(name="George Orwell", birth_date=date(1903, 6, 25), nationality="British")
-        
+
         # Crear editoriales
         publisher1 = Publisher(name="Allen & Unwin", founding_year=1936)
         publisher2 = Publisher(name="Secker & Warburg", founding_year=1936)
-        
+
         # Crear libros
         book1 = Book(
             title="The Hobbit",
@@ -35,11 +41,19 @@ def seed_database():
             author=author2,
             publisher=publisher2
         )
-        
+
         # Crear usuarios
-        user1 = User(name="John Doe", email="john@example.com")
-        user2 = User(name="Jane Smith", email="jane@example.com")
-        
+        user1 = User(
+            name="John Doe",
+            email="john@example.com",
+            hashed_password=get_password_hash("password123")
+        )
+        user2 = User(
+            name="Jane Smith",
+            email="jane@example.com",
+            hashed_password=get_password_hash("securepass456")
+        )
+
         # Crear préstamos
         loan1 = Loan(
             book=book1,
@@ -52,13 +66,19 @@ def seed_database():
             user=user2,
             loan_date=date.today() - timedelta(days=5),
             due_date=date.today() + timedelta(days=15),
-            return_date=date.today()  # Libro ya devuelto
+            return_date=date.today()
         )
-        
+
         # Añadir todos los objetos a la sesión
-        session.add_all([author1, author2, publisher1, publisher2, book1, book2, user1, user2, loan1, loan2])
+        session.add_all([
+            author1, author2,
+            publisher1, publisher2,
+            book1, book2,
+            user1, user2,
+            loan1, loan2
+        ])
         session.commit()
+        print("✅ Base de datos inicializada con datos de prueba!")
 
 if __name__ == "__main__":
     seed_database()
-    print("✅ Base de datos inicializada con datos de prueba!")
