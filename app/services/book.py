@@ -29,9 +29,9 @@ class BookService:
             due_data=None   
         )
     
-    def get_books(self) -> list[BookRead]:
-        logger.info("Fetching all books")
-        books = self.book_repo.get_all()
+    def get_books(self, limit: int = 100, offset: int = 0) -> list[BookRead]:
+        logger.info("Fetching books with limit=%s offset=%s", limit, offset)
+        books = self.book_repo.get_all()[offset:offset + limit]
         results = []
         for book in books:
             author = self.author_repo.get_by_id(book.author_id)

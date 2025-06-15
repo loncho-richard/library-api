@@ -18,8 +18,8 @@ async def create_book(book: BookCreate, service: BookService = Depends(get_servi
 
 
 @router.get("/", response_model=list[BookRead])
-async def list_books(service: BookService = Depends(get_service)):
-    return service.get_books()
+async def list_books(limit: int = 100, offset: int = 0, service: BookService = Depends(get_service)):
+    return service.get_books(limit=limit, offset=offset)
 
 
 @router.get("/{book_id}", response_model=BookRead)
