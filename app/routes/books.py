@@ -1,8 +1,10 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File
 from sqlmodel import Session
 from app.schemas.book import BookCreate, BookRead, BookUpdate
 from app.services.book import BookService
 from app.database import get_session
+import csv
+from io import StringIO
 
 
 router = APIRouter(prefix="/books", tags=["Books"])
@@ -42,3 +44,31 @@ async def update_book(book_id: int, update: BookUpdate, service: BookService = D
 async def delete_book(book_id: int, service: BookService = Depends(get_service)):
     if not service.delete_book(book_id):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Book not found")
+
+
+@router.post("/upload-csv")
+async def upload_books_csv(file: UploadFile = File(...), service: BookService = Depends(get_service)):
+    if not file.filename.endswith(".csv"):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid file type")
+
+    content = await file.read()
+    reader = csv.DictReader(StringIO(content.decode("utf-8")))
+    
+    created = []
+    errors = []
+
+    for i, row in enumerate(reader, start=1):
+        try:
+            data = BookCreate(
+                title=row["title"],
+                isbn=row["isbn"],
+                publication_year=int(row["publication_year"]),
+                author_id=int(row["author_id"]),
+                publisher_id=int(row["publisher_id"]),
+            )
+            book = service.create_book(data)
+            created.append(book)
+        except Exception as e:
+            errors.append(f"Row {i}: {str(e)}")
+    
+    return {"created": created, "errors": errors}
