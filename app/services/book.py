@@ -15,6 +15,9 @@ class BookService:
         self.publisher_repo = PublisherRepository(db)
     
     def create_book(self, data: BookCreate) -> BookRead:
+        if self.book_repo.get_by_isbn(data.isbn):
+            raise ValueError("A book with this ISBN already exists.")
+        
         logger.info("Creating book with data: %s", data.model_dump())
         book = Book(**data.model_dump())
         created = self.book_repo.create(book)

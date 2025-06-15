@@ -18,6 +18,9 @@ class BookRepository:
     def get_by_id(self, book_id: int) -> Book | None:
         return self.db.get(Book, book_id)
     
+    def get_by_isbn(self, isbn: str) -> Book | None:
+        return self.db.exec(select(Book).where(Book.isbn == isbn)).first()
+    
     def update(self, db_book: Book, updates: dict) -> Book:
         for key, value in updates.items():
             setattr(db_book, key, value)
