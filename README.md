@@ -51,6 +51,8 @@ fastapi dev app/main.py
 
 ## 👥 Demo Users (Preloaded)
 
+These demo users are created by (`initial_data.py`) when the database is first seeded:
+
 | Name       | Email            | Password      |
 |------------|------------------|---------------|
 | Jhon Doe   | jhon@example.com | password123   |
