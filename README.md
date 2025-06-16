@@ -9,7 +9,7 @@ The application follows a **layered architecture**:
 - **Domain:** data models (`app/models`)
 - **Persistence:** data access layer using repositories (`app/repositories`)
 - **Application:** business logic (`app/services`)
-- **Presentation:** HTTP endpoints (`app/api/routes`)
+- **Presentation:** HTTP endpoints (`app/routes`)
 
 ## 🚀 Stack
 
