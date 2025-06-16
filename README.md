@@ -218,7 +218,8 @@ The API responses are **denormalized**:
 - [x] Pagination
 - [x] Logging
 - [x] CSV bulk upload for books
-- [x] Dependency injection 
+- [x] Dependency injection
+- [x] Set Alembic for migrations
 
 ---
 
