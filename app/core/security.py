@@ -67,7 +67,7 @@ async def get_current_user(
     except InvalidTokenError:
         raise credentials_exception
     
-    user = UserRepository(db).get_user_by_email(username)
+    user = UserRepository(db).get_by_email(username)
 
     if user is None:
         raise credentials_exception
